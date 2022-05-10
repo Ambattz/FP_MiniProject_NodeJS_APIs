@@ -59,6 +59,18 @@ sellAndBuyRouter.patch("/sellProduct/:id", (req, res) => {
         }
     })
 })
+//Delete method for sellProduct:id
+sellAndBuyRouter.delete("/sellProduct/:id", (req, res) => {
+    const filter = { _id: req.params.id };
+    var updatedProduct = SellBuy.deleteOne(filter, { new: true, runValidators: true }, (err, updatedProduct) => {
+        if (err) {
+            res.status(400).send();
+        }
+        else {
+            res.status(200).send({ result: updatedProduct, message: "Deleted successfully" })
+        }
+    })
+})
 
 // exporting the router
 module.exports = sellAndBuyRouter;
