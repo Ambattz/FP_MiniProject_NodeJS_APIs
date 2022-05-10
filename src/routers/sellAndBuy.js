@@ -23,7 +23,7 @@ sellAndBuyRouter.get("/sellProduct", (req, res) => {
                 .find({})
                 .sort({ costPrice: 1 })
                 .then((result) => {
-                    res.status(200).send({ result: result, message: query })
+                    res.status(200).send(result)
                 })
                 .catch((err) => {
                     res.status(400).send();
@@ -34,7 +34,7 @@ sellAndBuyRouter.get("/sellProduct", (req, res) => {
                 .find({})
                 .sort({ costPrice: -1 })
                 .then((result) => {
-                    res.status(200).send({ result: result, message: query })
+                    res.status(200).send(result)
                 })
                 .catch((err) => {
                     res.status(400).send();
@@ -45,7 +45,7 @@ sellAndBuyRouter.get("/sellProduct", (req, res) => {
                 .find({})
                 .sort({ soldPrice: 1 })
                 .then((result) => {
-                    res.status(200).send({ result: result, message: query })
+                    res.status(200).send(result)
                 })
                 .catch((err) => {
                     res.status(400).send();
@@ -56,7 +56,7 @@ sellAndBuyRouter.get("/sellProduct", (req, res) => {
                 .find({})
                 .sort({ soldPrice: -1 })
                 .then((result) => {
-                    res.status(200).send({ result: result, message: query })
+                    res.status(200).send(result)
                 })
                 .catch((err) => {
                     res.status(400).send();
@@ -64,13 +64,12 @@ sellAndBuyRouter.get("/sellProduct", (req, res) => {
             break;
         case "all":
             SellBuy
-                .find({})
-                .then((result) => {
-                    res.status(200).send({ result: result, message: "all" })
+                .find({}, (err, docs) => {
+                    if (err) {
+                        res.status(400).send();
+                    }
+                    res.status(200).send(docs)
                 })
-                .catch((err) => {
-                    res.status(400).send();
-                });
             break;
         default:
             SellBuy
@@ -78,7 +77,7 @@ sellAndBuyRouter.get("/sellProduct", (req, res) => {
                     if (err) {
                         res.status(400).send();
                     }
-                    res.status(200).send({ result: docs, message: query })
+                    res.status(200).send(docs)
                 })
     }
 })
@@ -96,7 +95,7 @@ sellAndBuyRouter.post("/sellProduct", (req, res) => {
         .catch((err) => {
             if (err.name == 'ValidationError') {
                 for (field in err.errors) {
-                    res.status(400).send(err.errors[field].message);
+                    res.status(400).send({ error: err.errors[field].message });
                 }
             }
         });
@@ -109,7 +108,7 @@ sellAndBuyRouter.patch("/sellProduct/:id", (req, res) => {
 
         if (err) {
             for (field in err.errors) {
-                res.status(400).send(err.errors[field].message);
+                res.status(400).send({ error: err.errors[field].message });
             }
         }
         else {
