@@ -15,7 +15,7 @@ const sellBuySchema = new mongoose.Schema({
     },
     soldPrice: {
         type: Number,
-        min: [1, "cost price value cannot be zero or negative value"]
+        min: [1, "sold price value cannot be zero or negative value"]
     }
 })
 
