@@ -1,28 +1,86 @@
 const e = require("express");
 const express = require("express");
 const SellBuy = require("../mongoose/models/sellBuy")
+const url = require('url');
 
 // setting up the router
 const sellAndBuyRouter = new express.Router();
 
 //Get method for sellProduct
 sellAndBuyRouter.get("/sellProduct", (req, res) => {
-    const newProduct = new SellBuy({
-        productName: req.body.productName,
-        costPrice: req.body.costPrice
-    })
-    newProduct
-        .save()
-        .then((result) => {
-            res.status(201).send({ result: result, message: "Product Added" })
-        })
-        .catch((err) => {
-            if (err.name == 'ValidationError') {
-                for (field in err.errors) {
-                    res.status(400).send(err.errors[field].message);
-                }
-            }
-        });
+    if (req.query.product != undefined) {
+        var query = req.query.product;
+    }
+    if (req.query.sortBy != undefined) {
+        var query = req.query.sortBy;
+    }
+    if (req.query.sortBy === undefined && req.query.product === undefined) {
+        var query = "all";
+    }
+    switch (query) {
+        case "lowerCostPrice":
+            SellBuy
+                .find({})
+                .sort({ costPrice: 1 })
+                .then((result) => {
+                    res.status(200).send({ result: result, message: query })
+                })
+                .catch((err) => {
+                    res.status(400).send();
+                });
+            break;
+        case "higherCostPrice":
+            SellBuy
+                .find({})
+                .sort({ costPrice: -1 })
+                .then((result) => {
+                    res.status(200).send({ result: result, message: query })
+                })
+                .catch((err) => {
+                    res.status(400).send();
+                });
+            break;
+        case "lowerSoldPrice":
+            SellBuy
+                .find({})
+                .sort({ soldPrice: 1 })
+                .then((result) => {
+                    res.status(200).send({ result: result, message: query })
+                })
+                .catch((err) => {
+                    res.status(400).send();
+                });
+            break;
+        case "higherSoldPrice":
+            SellBuy
+                .find({})
+                .sort({ soldPrice: -1 })
+                .then((result) => {
+                    res.status(200).send({ result: result, message: query })
+                })
+                .catch((err) => {
+                    res.status(400).send();
+                });
+            break;
+        case "all":
+            SellBuy
+                .find({})
+                .then((result) => {
+                    res.status(200).send({ result: result, message: "all" })
+                })
+                .catch((err) => {
+                    res.status(400).send();
+                });
+            break;
+        default:
+            SellBuy
+                .find({ productName: query }, (err, docs) => {
+                    if (err) {
+                        res.status(400).send();
+                    }
+                    res.status(200).send({ result: docs, message: query })
+                })
+    }
 })
 //Post method for sellProduct
 sellAndBuyRouter.post("/sellProduct", (req, res) => {
